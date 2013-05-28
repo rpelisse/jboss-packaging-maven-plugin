@@ -276,6 +276,13 @@ public abstract class AbstractPackagingMojo
     public void buildExplodedPackaging( Set excludes )
         throws MojoExecutionException
     {
+
+    	if ( getProject().getPackaging().equals("pom") ) {
+    		// allow configuring the plugin from a parent POM
+    		getLog().info(project.getArtifactId() + " is a 'pom' file, skipping assembly...");
+    		return;
+    	}
+
         getLog().info( "Assembling JBoss packaging " + project.getArtifactId() + " in " + packagingDirectory );
 
         if ( excludes == null )
