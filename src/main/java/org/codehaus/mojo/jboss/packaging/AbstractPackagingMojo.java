@@ -52,7 +52,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * The maven project.
-     * 
+     *
      * @parameter default-value="${project}"
      * @readonly
      */
@@ -60,14 +60,14 @@ public abstract class AbstractPackagingMojo
 
     /**
      * The directory for the generated packaging.
-     * 
+     *
      * @parameter default-value="${project.build.directory}"
      */
     private File outputDirectory;
 
     /**
      * The directory containing generated classes.
-     * 
+     *
      * @parameter default-value="${project.build.outputDirectory}"
      * @readonly
      */
@@ -75,7 +75,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * The directory where the JBoss packaging is built.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     private File packagingDirectory;
@@ -83,35 +83,35 @@ public abstract class AbstractPackagingMojo
     /**
      * The filename for the output deployment descriptor. By default the deployment descriptor will retain the same
      * filename.
-     * 
+     *
      * @parameter
      */
     private String deploymentDescriptorDestName;
 
     /**
      * The destination of the deployment descriptor file.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/${project.build.finalName}/META-INF"
      */
     private File deploymentDescriptorDest;
 
     /**
      * The directory where to put the libs.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/${project.build.finalName}/lib"
      */
     private File libDirectory;
 
     /**
      * The name of the generated packaging archive.
-     * 
+     *
      * @parameter default-value="${project.build.finalName}"
      */
     private String archiveName;
 
     /**
      * All artifacts are excluded.
-     * 
+     *
      * @parameter expression="${excludeAll}" default-value="false"
      */
     private boolean excludeAll;
@@ -119,56 +119,56 @@ public abstract class AbstractPackagingMojo
     /**
      * Dependency Artifacts excluded from packaging within the generated archive file. Use artifactId:groupId in nested
      * exclude tags.
-     * 
+     *
      * @parameter
      */
     private Set excludes;
 
     /**
      * The Jar archiver.
-     * 
+     *
      * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"
      */
     private JarArchiver jarArchiver;
 
     /**
      * The maven archive configuration to use.
-     * 
+     *
      * @parameter
      */
     private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
     /**
      * The manifest file for the archive.
-     * 
+     *
      * @parameter
      */
     private File manifest;
 
     /**
      * Classifier to add to the generated artifact. If given, the artifact will not be the primary project artifact.
-     * 
+     *
      * @parameter
      */
     private String classifier;
 
     /**
      * Whether this is the main artifact of the current project.
-     * 
+     *
      * @parameter default-value="true"
      */
     private boolean primaryArtifact;
 
     /**
      * The project helper.
-     * 
+     *
      * @component
      */
     private MavenProjectHelper projectHelper;
 
     /**
      * The artifact handler manager.
-     * 
+     *
      * @component
      */
     private ArtifactHandlerManager artifactHandlerManager;
@@ -177,7 +177,7 @@ public abstract class AbstractPackagingMojo
      * Whether to remove the version numbers from the filenames of the included dependencies. By default the included
      * dependencies will have the format [artifactId]-[version]-[classifier].[type] If this parameter is set to true,
      * the jar name will be in the format [artifactId]-[classifier].[type]
-     * 
+     *
      * @parameter default-value="false"
      */
     private boolean removeDependencyVersions;
@@ -185,7 +185,7 @@ public abstract class AbstractPackagingMojo
     /**
      * Whether to generate only the exploded archive format. By default both an exploded directory and a zipped file
      * will be created. If set to "true" only the exploded directory will be created.
-     * 
+     *
      * @parameter default-value="false" expression="${explodedOnly}"
      * @since 2.0
      */
@@ -234,14 +234,14 @@ public abstract class AbstractPackagingMojo
     /**
      * Get the deployment descriptor file. Subclasses may override this method to provide a different name for their
      * type of archive packaging.
-     * 
+     *
      * @return deployment descriptor File
      */
     public abstract File getDeploymentDescriptor();
 
     /**
      * Get the type of the artifact.
-     * 
+     *
      * @return The type of the generated artifact
      */
     public abstract String getArtifactType();
@@ -256,7 +256,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Build the package in an exploded format.
-     * 
+     *
      * @throws MojoExecutionException if an error occurred
      * @throws MojoFailureException if an error occurred
      */
@@ -268,7 +268,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Build the package in an exploded format.
-     * 
+     *
      * @param excludes File patterns to exclude from the packaging.
      * @throws MojoExecutionException if an error occurred
      * @throws MojoFailureException if an error occurred
@@ -276,13 +276,6 @@ public abstract class AbstractPackagingMojo
     public void buildExplodedPackaging( Set excludes )
         throws MojoExecutionException
     {
-
-    	if ( getProject().getPackaging().equals("pom") ) {
-    		// allow configuring the plugin from a parent POM
-    		getLog().info(project.getArtifactId() + " is a 'pom' file, skipping assembly...");
-    		return;
-    	}
-
         getLog().info( "Assembling JBoss packaging " + project.getArtifactId() + " in " + packagingDirectory );
 
         if ( excludes == null )
@@ -415,7 +408,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Perform any packaging specific to this type.
-     * 
+     *
      * @param excludes The exclude list.
      * @throws MojoExecutionException For plugin failures.
      * @throws MojoFailureException For unexpected plugin failures.
@@ -436,7 +429,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Generates the packaged archive.
-     * 
+     *
      * @throws MojoExecutionException if there is a problem
      */
     protected void performPackaging()
@@ -488,7 +481,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Calculate the name of the archive file.
-     * 
+     *
      * @param outputDirectory The output directory.
      * @param archiveName The name of the artifact archive.
      * @param classifier The classifier of the artifact.
@@ -512,7 +505,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Get the name of the artifact.
-     * 
+     *
      * @param artifact The current artifact.
      * @return The name of the artifact.
      */
@@ -547,7 +540,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Main execution for the goal.
-     * 
+     *
      * @throws MojoExecutionException if an error occurred while building the webapp
      */
     public void execute()
@@ -573,7 +566,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Routine that includes the specified artifact into the exploded packaging.
-     * 
+     *
      * @param artifact
      * @param name
      * @throws Exception
@@ -586,7 +579,7 @@ public abstract class AbstractPackagingMojo
 
     /**
      * Routine that includes the generated classes into the exploded packaging.
-     * 
+     *
      * @throws Exception
      */
     protected void packageClasses()

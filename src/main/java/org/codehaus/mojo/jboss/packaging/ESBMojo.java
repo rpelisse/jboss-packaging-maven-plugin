@@ -28,7 +28,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Builds a deployable JBoss ESB Archive.
- * 
+ *
  * @author <a href="mailto:kevin.conner@jboss.com">Kevin Conner</a>
  * @goal esb
  * @phase package
@@ -55,7 +55,7 @@ public class ESBMojo
 
     /**
      * Override the deployment xml file
-     * 
+     *
      * @parameter expression="${maven.esb.deployment.xml}"
      */
     private File deploymentXml;
@@ -63,7 +63,7 @@ public class ESBMojo
     /**
      * The location of the jboss deployment descriptor file (jboss-esb.xml) If it is present in
      * src/main/resources/META-INF then it will automatically be included. Otherwise this parameter must be set.
-     * 
+     *
      * @parameter default-value="${project.build.outputDirectory}/META-INF/jboss-esb.xml"
      *            expression="${deploymentDescriptorFile}"
      */
@@ -71,7 +71,7 @@ public class ESBMojo
 
     /**
      * Perform any packaging specific to this type.
-     * 
+     *
      * @param excludes The exclude list.
      * @throws MojoExecutionException For plugin failures.
      * @throws MojoFailureException For unexpected plugin failures.
@@ -94,6 +94,18 @@ public class ESBMojo
         }
     }
 
+    public void buildExplodedPackaging( Set excludes ) throws MojoExecutionException {
+    	// Skip packaging if the project is NOT of type 'jboss-esb'
+    	final String packaging = getProject().getPackaging();
+    	if ( ! packaging.equals(ARTIFACT_TYPE) ) {
+    		getLog().info(getProject().getArtifactId() + " packaging is" + packaging + ", and not " +
+    			ARTIFACT_TYPE + " file, skipping assembly...");
+    		return;
+    	}
+    	super.buildExplodedPackaging(excludes);
+    }
+
+
     /**
      * @return deployment descriptor file name, sans path
      */
@@ -104,7 +116,7 @@ public class ESBMojo
 
     /**
      * Get the type of the artifact.
-     * 
+     *
      * @return The type of the generated artifact.
      */
     public String getArtifactType()
