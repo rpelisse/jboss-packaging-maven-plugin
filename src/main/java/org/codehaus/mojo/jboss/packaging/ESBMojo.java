@@ -98,8 +98,9 @@ public class ESBMojo
     	// Skip packaging if the project is NOT of type 'jboss-esb'
     	final String packaging = getProject().getPackaging();
     	if ( ! packaging.equals(ARTIFACT_TYPE) ) {
-    		getLog().info(getProject().getArtifactId() + " packaging is" + packaging + ", and not " +
-    			ARTIFACT_TYPE + " file, skipping assembly...");
+    		getLog().warn(getProject().getArtifactId() + " packaging is" + packaging + ", and not " +
+    			ARTIFACT_TYPE + " file, skipping assembly - this may be a misconfiguration, common" +
+    					"configuration should be in the <pluginManagement/> section.");
     		return;
     	}
     	super.buildExplodedPackaging(excludes);
