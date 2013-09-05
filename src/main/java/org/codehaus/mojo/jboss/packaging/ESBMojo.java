@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.jboss.packaging.util.XmlUtils;
 import org.codehaus.plexus.util.FileUtils;
+import org.w3c.dom.Document;
 
 /**
  * Builds a deployable JBoss ESB Archive.
@@ -77,6 +79,9 @@ public class ESBMojo
      * @throws MojoFailureException For unexpected plugin failures.
      * @throws IOException For exceptions during IO operations.
      */
+
+    public static final String XSD_DEFAULT_LOCATION = "esb/xsd";
+
     protected void buildSpecificPackaging( final Set excludes )
         throws MojoExecutionException
     {
@@ -106,6 +111,9 @@ public class ESBMojo
     	super.buildExplodedPackaging(excludes);
     }
 
+    protected Document checkIfDeploymentDescriptorIsValidXMLFile(File deploymentDescriptorFile) {
+        return XmlUtils.validateDescriptorWithXSD(super.checkIfDeploymentDescriptorIsValidXMLFile(deploymentDescriptorFile), deploymentDescriptorFile, XSD_DEFAULT_LOCATION);
+    }
 
     /**
      * @return deployment descriptor file name, sans path

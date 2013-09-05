@@ -19,20 +19,6 @@ package org.codehaus.mojo.jboss.packaging;
  * under the License.
  */
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +27,27 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.maven.archiver.MavenArchiveConfiguration;
+import org.apache.maven.archiver.MavenArchiver;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
+import org.codehaus.mojo.jboss.packaging.util.XmlUtils;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Abstract super class for all the packaging mojos. This class contains the logic for actually building the packaging
@@ -311,7 +318,8 @@ public abstract class AbstractPackagingMojo
         if ( deploymentDescriptorFile == null || !deploymentDescriptorFile.exists() )
         {
             throw new MojoExecutionException( "Could not find descriptor file: " + deploymentDescriptorFile );
-        }
+        } else
+            checkIfDeploymentDescriptorIsValidXMLFile(deploymentDescriptorFile);
 
         String destName = this.getDeploymentDescriptorDestName();
         if ( destName == null )
@@ -407,6 +415,19 @@ public abstract class AbstractPackagingMojo
     }
 
     /**
+     * Ensure the deployment descriptor is a file XML file. In the rather
+     * improbable case the descriptor is not XML - or, more likely, if more
+     * validation can be done, this method can be overriden by child class.
+     *
+	 * @param deploymentDescriptorFile
+	 */
+	protected  Document checkIfDeploymentDescriptorIsValidXMLFile(
+			File deploymentDescriptorFile) {
+		return XmlUtils.buildDocument(deploymentDescriptorFile, deploymentDescriptorDestName);
+	}
+
+
+	/**
      * Perform any packaging specific to this type.
      *
      * @param excludes The exclude list.

@@ -1,0 +1,53 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<jbossesb
+	xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd"
+	parameterReloadSecs="5">
+
+	<providers>
+		<fs-provider name="FileSystemProvider">
+			<fs-bus busid="FileChannel">
+				<fs-message-filter directory="/wxx/esb/incoming"
+					input-suffix=".xml" work-suffix=".esbWorking" post-delete="false"
+					post-directory="/wxx/esb/output" post-suffix=".sentToEsb"
+					error-delete="false" error-directory="/wxx/esb/error" error-suffix=".IN_ERROR" />
+			</fs-bus>
+		</fs-provider>
+
+		<jms-provider name="JBossMQ" connection-factory="ConnectionFactory">
+			<jms-bus busid="quickstartEsbChannel">
+				<jms-message-filter dest-type="QUEUE"
+					dest-name="queue/vacancy_importer_queue" />
+			</jms-bus>
+        </jms-provider    --> here is some broken XML !
+	</providers>
+
+	<services>
+		<service category="myCategory" name="SplitterService"
+			description="A simple pipeline triggered by a JMS message" invmScope="GLOBAL">
+			<listeners>
+				<jms-listener name="helloWorldAction" busidref="quickstartEsbChannel" />
+				<fs-listener name="FileGateway" busidref="FileChannel"
+					is-gateway="true" schedule-frequency="3">
+					<property name="composer-class"
+						value="org.jboss.soa.esb.smooks.splitting.FileStreamSplitter" />
+					<property name="splitterConfig" value="/smooks-split.xml" />
+				</fs-listener>
+			</listeners>
+			<actions mep="OneWay">
+				<action name="print" class="org.jboss.soa.esb.actions.SystemPrintln">
+					<property name="printfull" value="true" />
+				</action>
+			</actions>
+		</service>
+		<service category="myCategory" name="ReceiveRegisteredSplits"
+			description="A simple pipeline triggered by a JMS message" invmScope="GLOBAL">
+			<property name="maxThreads" value="8" />
+			<actions mep="OneWay">
+				<action name="printMessage"
+					class="com.dtk.esb.vacancy.actions.VacancyImporterAction" />
+			</actions>
+		</service>
+	</services>
+</jbossesb>
